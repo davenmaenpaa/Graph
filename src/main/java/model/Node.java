@@ -29,6 +29,14 @@ public final class Node {
     }
 
     @Override
+    public String toString() {
+        return "Node{" +
+                "state=" + state +
+                ", distance=" + distance +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -41,13 +49,4 @@ public final class Node {
         return Objects.hash(state);
     }
 
-    public void printNodeAsJSON() {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            System.out.println(objectMapper.writeValueAsString(this));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not write object as string", e);
-        }
-    }
 }
