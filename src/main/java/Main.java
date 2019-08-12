@@ -4,7 +4,7 @@ import model.Bottle;
 import model.Solution;
 
 @Slf4j
-public class Main {
+class Main {
 
     public static void main(String[] args) {
         var graph = new Graph();
