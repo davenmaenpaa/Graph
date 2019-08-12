@@ -1,7 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +14,8 @@ import java.util.Objects;
 public final class Node {
 
     State state;
-    Node parentNode;
     int distance;
+    Node parentNode;
 
     public Node(State state, int distance) {
         this.state = state;
@@ -26,14 +24,6 @@ public final class Node {
 
     public Node(int distance) {
         this.distance = distance;
-    }
-
-    @Override
-    public String toString() {
-        return "Node{" +
-                "state=" + state +
-                ", distance=" + distance +
-                '}';
     }
 
     @Override

@@ -1,5 +1,5 @@
-FROM 12-jdk
+FROM openjdk:12-jdk
 
-ADD target/*.jar /opt/openjdk-12/bottle.jar
+ADD target/bottle-1.0-SNAPSHOT-jar-with-dependencies.jar bottle.jar
 
-CMD ["java -jar bottle.jar"]
+CMD ["java","-jar","bottle.jar"]

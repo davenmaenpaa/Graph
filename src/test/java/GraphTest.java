@@ -4,7 +4,6 @@ import model.State;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 import static java.util.Collections.singletonList;
