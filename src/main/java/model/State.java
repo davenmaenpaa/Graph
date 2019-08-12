@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public final class State {
 
-    private Bottle bottleA;
-    private Bottle bottleB;
+    Bottle bottleA;
+    Bottle bottleB;
 
 }
