@@ -31,7 +31,7 @@ class Graph {
                 nodeWithShortestPathToTarget = parentNode;
             }
 
-            var childNodes = buildNodes(nodes, parentNode);
+            var childNodes = buildChildNodes(nodes, parentNode);
             queue.poll();
 
             childNodes.forEach(node -> {
@@ -43,11 +43,19 @@ class Graph {
         return nodeWithShortestPathToTarget;
     }
 
-    private boolean nodeHaveShorterPath(int target, LinkedList<Node> queue, Node nodeWithShortestPathToTarget, Node parentNode) {
-        return isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) && childNodeDistanceIsShorter(nodeWithShortestPathToTarget, parentNode) ||
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) && nodeWithShortestPathToTarget.getDistance() == 0 ||
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) && childNodeDistanceIsShorter(nodeWithShortestPathToTarget, queue.getFirst()) ||
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) && nodeWithShortestPathToTarget.getDistance() == 0;
+    private boolean nodeHaveShorterPath(int target, LinkedList<Node> queue, Node nodeWithShortestPathToTarget,
+                                        Node parentNode) {
+        return isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) &&
+                childNodeDistanceIsShorter(nodeWithShortestPathToTarget, parentNode) ||
+
+                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) &&
+                        nodeWithShortestPathToTarget.getDistance() == 0 ||
+
+                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) &&
+                        childNodeDistanceIsShorter(nodeWithShortestPathToTarget, queue.getFirst()) ||
+
+                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) &&
+                        nodeWithShortestPathToTarget.getDistance() == 0;
     }
 
     private boolean childNodeDistanceIsShorter(Node nodeWithShortestPathToTarget, Node parentNode) {
@@ -62,7 +70,7 @@ class Graph {
         return nodes.containsKey(node.hashCode());
     }
 
-    List<Node> buildNodes(HashMap<Integer, Node> nodes, Node parentNode) {
+    List<Node> buildChildNodes(HashMap<Integer, Node> nodes, Node parentNode) {
         var childNodes = new ArrayList<Optional<Node>>();
         childNodes.add(newNodeFilledFromBottleAToB(nodes, parentNode));
         childNodes.add(newNodeFilledFromBottleBToA(nodes, parentNode));
@@ -88,7 +96,8 @@ class Graph {
         if (bottleIsFull(currentState.getBottleB()) || bottleIsEmpty(bottleA)) {
             return empty();
         } else {
-            volumeToFillFromAToB = Math.min(bottleA.getCurrentVolume(), bottleB.getMaxVolume() - bottleB.getCurrentVolume());
+            volumeToFillFromAToB = Math.min(bottleA.getCurrentVolume(),
+                    bottleB.getMaxVolume() - bottleB.getCurrentVolume());
             volumeLeftInA = bottleA.getCurrentVolume() - volumeToFillFromAToB;
         }
 
@@ -121,17 +130,18 @@ class Graph {
         if (bottleIsFull(currentState.getBottleA()) || bottleIsEmpty(bottleB)) {
             return empty();
         } else {
-            volumeToFillFromBToA = Math.min(bottleB.getCurrentVolume(), bottleA.getMaxVolume() - bottleA.getCurrentVolume());
+            volumeToFillFromBToA = Math.min(bottleB.getCurrentVolume(),
+                    bottleA.getMaxVolume() - bottleA.getCurrentVolume());
             volumeLeftInB = bottleB.getCurrentVolume() - volumeToFillFromBToA;
         }
 
-        var newState = State.builder()
+        var childState = State.builder()
                 .bottleA(new Bottle(bottleA.getMaxVolume(), volumeToFillFromBToA + bottleA.getCurrentVolume()))
                 .bottleB(new Bottle(bottleB.getMaxVolume(), volumeLeftInB))
                 .build();
 
         var childNode = Node.builder()
-                .state(newState)
+                .state(childState)
                 .parentNode(parentNode)
                 .distance(parentNode.getDistance() + 1)
                 .build();
@@ -148,13 +158,14 @@ class Graph {
             return empty();
         }
 
-        var newState = State.builder()
-                .bottleA(new Bottle(parentNode.getState().getBottleA().getMaxVolume(), parentNode.getState().getBottleA().getMaxVolume()))
+        var childState = State.builder()
+                .bottleA(new Bottle(parentNode.getState().getBottleA().getMaxVolume(),
+                        parentNode.getState().getBottleA().getMaxVolume()))
                 .bottleB(cloneBottle(parentNode.getState().getBottleB()))
                 .build();
 
         var childNode = Node.builder()
-                .state(newState)
+                .state(childState)
                 .parentNode(parentNode)
                 .distance(parentNode.getDistance() + 1)
                 .build();
@@ -173,7 +184,8 @@ class Graph {
 
         var newState = State.builder()
                 .bottleA(cloneBottle(parentNode.getState().getBottleA()))
-                .bottleB(new Bottle(parentNode.getState().getBottleB().getMaxVolume(), parentNode.getState().getBottleB().getMaxVolume()))
+                .bottleB(new Bottle(parentNode.getState().getBottleB().getMaxVolume(),
+                        parentNode.getState().getBottleB().getMaxVolume()))
                 .build();
 
         var childNode = Node.builder()
@@ -197,16 +209,18 @@ class Graph {
         return isCurrentVolumeTheSameAsTarget(0, bottle);
     }
 
-    private Optional<Node> newNodeEmptiedBottleB(HashMap<Integer, Node> nodes, Node parentNode) {
+    private Optional<Node> newNodeEmptiedBottleA(HashMap<Integer, Node> nodes, Node parentNode) {
         if (bottleIsEmpty(parentNode.getState().getBottleA())) {
             return empty();
         }
 
+        var childState = State.builder()
+                .bottleA(new Bottle(parentNode.getState().getBottleA().getMaxVolume(), 0))
+                .bottleB(cloneBottle(parentNode.getState().getBottleB()))
+                .build();
+
         var childNode = Node.builder()
-                .state(State.builder()
-                        .bottleA(cloneBottle(parentNode.getState().getBottleA()))
-                        .bottleB(new Bottle(parentNode.getState().getBottleB().getMaxVolume(), 0))
-                        .build())
+                .state(childState)
                 .parentNode(parentNode)
                 .distance(parentNode.getDistance() + 1)
                 .build();
@@ -218,16 +232,18 @@ class Graph {
         return Optional.of(childNode);
     }
 
-    private Optional<Node> newNodeEmptiedBottleA(HashMap<Integer, Node> nodes, Node parentNode) {
+    private Optional<Node> newNodeEmptiedBottleB(HashMap<Integer, Node> nodes, Node parentNode) {
         if (bottleIsEmpty(parentNode.getState().getBottleA())) {
             return empty();
         }
 
+        var childState = State.builder()
+                .bottleA(cloneBottle(parentNode.getState().getBottleA()))
+                .bottleB(new Bottle(parentNode.getState().getBottleB().getMaxVolume(), 0))
+                .build();
+
         var childNode = Node.builder()
-                .state(State.builder()
-                        .bottleA(new Bottle(parentNode.getState().getBottleA().getMaxVolume(), 0))
-                        .bottleB(cloneBottle(parentNode.getState().getBottleB()))
-                        .build())
+                .state(childState)
                 .parentNode(parentNode)
                 .distance(parentNode.getDistance() + 1)
                 .build();

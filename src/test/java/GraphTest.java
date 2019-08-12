@@ -35,7 +35,7 @@ class GraphTest {
         var startingNode = new Node(new State(new Bottle(3, 0), new Bottle(5, 0)), 1);
         nodes.put(startingNode.hashCode(), startingNode);
 
-        var actual = graph.buildNodes(nodes, startingNode);
+        var actual = graph.buildChildNodes(nodes, startingNode);
 
         var expected = new ArrayList<Node>();
         expected.add(new Node(new State(new Bottle(3, 3), new Bottle(5, 0)), 2));
@@ -50,7 +50,7 @@ class GraphTest {
         var startingNode = new Node(new State(new Bottle(3, 0), new Bottle(5, 5)), 1);
         nodes.put(startingNode.hashCode(), startingNode);
 
-        var actual = graph.buildNodes(nodes, startingNode);
+        var actual = graph.buildChildNodes(nodes, startingNode);
 
         var expected = singletonList(new Node(new State(new Bottle(3, 3), new Bottle(5, 2)), 2));
 
