@@ -1,4 +1,4 @@
-## Graph solution to measure volume
+# Graph solution to measure volume with two jugs
 
 #### Build and run
 ```Bash
