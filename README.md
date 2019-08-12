@@ -1,6 +1,6 @@
-##Graph solution to measure volume
+## Graph solution to measure volume
 
-####Build and run
+#### Build and run
 ```Bash
 mvn clean install
 docker build . -t bottle
