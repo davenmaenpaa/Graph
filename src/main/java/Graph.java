@@ -1,17 +1,13 @@
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import model.Bottle;
 import model.Node;
 import model.State;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
 
-@Data
-@NoArgsConstructor
-class Graph {
+public final class Graph {
 
     Node getNodeWithShortestPathToTarget(Bottle bottleA, Bottle bottleB, int target) {
         var nodes = new HashMap<Integer, Node>();
@@ -24,38 +20,41 @@ class Graph {
 
         Node nodeWithShortestPathToTarget = new Node(0);
 
-        while (!queue.isEmpty()) {
+        while (thereIsNodeInQueue(queue)) {
             var parentNode = queue.getFirst();
 
-            if (nodeHaveShorterPath(target, queue, nodeWithShortestPathToTarget, parentNode)) {
+            if (nodeHasTargetAndPathIsShorter(target, nodeWithShortestPathToTarget, parentNode)) {
                 nodeWithShortestPathToTarget = parentNode;
             }
 
             var childNodes = buildChildNodes(nodes, parentNode);
             queue.poll();
 
-            childNodes.forEach(node -> {
-                nodes.put(node.hashCode(), node);
-                queue.add(node);
+            childNodes.forEach(childNode -> {
+                nodes.put(childNode.hashCode(), childNode);
+                queue.add(childNode);
             });
         }
 
         return nodeWithShortestPathToTarget;
     }
 
-    private boolean nodeHaveShorterPath(int target, LinkedList<Node> queue, Node nodeWithShortestPathToTarget,
-                                        Node parentNode) {
-        return isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) &&
-                childNodeDistanceIsShorter(nodeWithShortestPathToTarget, parentNode) ||
+    private boolean thereIsNodeInQueue(LinkedList<Node> queue) {
+        return !queue.isEmpty();
+    }
 
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleA()) &&
-                        nodeWithShortestPathToTarget.getDistance() == 0 ||
+    private boolean nodeHasTargetAndPathIsShorter(int target, Node nodeWithShortestPath, Node nodeToCheck) {
+        return isCurrentVolumeTheSameAsTarget(target, nodeToCheck.getState().getBottleA()) &&
+                childNodeDistanceIsShorter(nodeWithShortestPath, nodeToCheck) ||
 
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) &&
-                        childNodeDistanceIsShorter(nodeWithShortestPathToTarget, queue.getFirst()) ||
+                isCurrentVolumeTheSameAsTarget(target, nodeToCheck.getState().getBottleA()) &&
+                        nodeWithShortestPath.getDistance() == 0 ||
 
-                isCurrentVolumeTheSameAsTarget(target, parentNode.getState().getBottleB()) &&
-                        nodeWithShortestPathToTarget.getDistance() == 0;
+                isCurrentVolumeTheSameAsTarget(target, nodeToCheck.getState().getBottleB()) &&
+                        childNodeDistanceIsShorter(nodeWithShortestPath, nodeToCheck) ||
+
+                isCurrentVolumeTheSameAsTarget(target, nodeToCheck.getState().getBottleB()) &&
+                        nodeWithShortestPath.getDistance() == 0;
     }
 
     private boolean childNodeDistanceIsShorter(Node nodeWithShortestPathToTarget, Node parentNode) {
@@ -82,7 +81,7 @@ class Graph {
         return childNodes.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     private Optional<Node> newNodeFilledFromBottleAToB(HashMap<Integer, Node> nodes, Node parentNode) {
@@ -182,14 +181,14 @@ class Graph {
             return empty();
         }
 
-        var newState = State.builder()
+        var childState = State.builder()
                 .bottleA(cloneBottle(parentNode.getState().getBottleA()))
                 .bottleB(new Bottle(parentNode.getState().getBottleB().getMaxVolume(),
                         parentNode.getState().getBottleB().getMaxVolume()))
                 .build();
 
         var childNode = Node.builder()
-                .state(newState)
+                .state(childState)
                 .parentNode(parentNode)
                 .distance(parentNode.getDistance() + 1)
                 .build();
