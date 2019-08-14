@@ -51,7 +51,6 @@ class GraphTest {
         nodes.put(startingNode.hashCode(), startingNode);
 
         var actual = graph.buildChildNodes(nodes, startingNode);
-
         var expected = singletonList(new Node(new State(new Bottle(3, 3), new Bottle(5, 2)), 2));
 
         assertTrue(actual.contains(expected.get(0)));
